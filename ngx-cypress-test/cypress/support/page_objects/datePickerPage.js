@@ -9,7 +9,7 @@ function selectDate(dateToAdd) {
     cy.get('nb-calendar-navigation').invoke('attr', 'ng-reflect-date').then(dateAttribute => {
         if (!dateAttribute.includes(futureMonth) || !dateAttribute.includes(futureYear)) {
             cy.get('[data-name="chevron-right"]').click()
-            selectDate()
+            selectDate(dateToAdd)
         } else {
             cy.get('.day-cell').not('.bounding-month').contains(futureDay).click()
         }
