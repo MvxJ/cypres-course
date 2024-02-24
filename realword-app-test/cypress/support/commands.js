@@ -41,7 +41,7 @@ Cypress.Commands.add('loginToApi', () => {
             }
         })
       })
-
+    //
     // cy.visit('/login')
     // cy.get('[placeholder="Email"]').type('mvxj11@example.com')
     // cy.get('[placeholder="Password"]').type('Qwertyuiop')
