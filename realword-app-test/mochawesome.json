@@ -1,0 +1,176 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 4,
+    "passes": 1,
+    "pending": 0,
+    "failures": 3,
+    "testsRegistered": 4,
+    "passPercent": 25,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false,
+    "start": "2024-02-25T14:26:10.635Z",
+    "end": "2024-02-25T14:26:27.747Z",
+    "duration": 17112
+  },
+  "results": [
+    {
+      "uuid": "adcd53de-66ed-48de-8989-80e872a07533",
+      "title": "",
+      "fullFile": "cypress/e2e/firstTest.spec.js",
+      "file": "cypress/e2e/firstTest.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "c5474c18-7b7e-46ac-b6d8-7af8e1c55e5d",
+          "title": "Test with backend",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify correct request and response",
+              "fullTitle": "Test with backend Verify correct request and response",
+              "timedOut": null,
+              "duration": 3098,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.intercept('POST', Cypress.env('apiUrl') + '/articles/').as('postArticles');\ncy.contains('New Article').click();\ncy.get('[formcontrolname=\"title\"]').type(\"First Article\");\ncy.get('[formcontrolname=\"description\"]').type(\"Description\");\ncy.get('[formcontrolname=\"body\"]').type(\"Example content\");\ncy.contains('Publish Article').click();\ncy.wait('@postArticles').then(xhr => {\n  expect(xhr.response.statusCode).to.equal(201);\n  expect(xhr.request.body.article.body).to.equal('Example content');\n  expect(xhr.response.body.article.description).to.equal('Description');\n});",
+              "err": {
+                "message": "AssertionError: expected 422 to equal 201",
+                "estack": "AssertionError: expected 422 to equal 201\n    at Context.eval (webpack://realword-app-test/./cypress/e2e/firstTest.spec.js:17:41)",
+                "diff": "- 422\n+ 201\n"
+              },
+              "uuid": "4bb2d67d-5347-47a0-ba76-6b12198180e3",
+              "parentUUID": "c5474c18-7b7e-46ac-b6d8-7af8e1c55e5d",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "verify popular tags are displayed",
+              "fullTitle": "Test with backend verify popular tags are displayed",
+              "timedOut": null,
+              "duration": 1540,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('.tag-list').should('contain', 'cypress').and('contain', 'automation').and('contain', 'testing');",
+              "err": {},
+              "uuid": "d3dba654-bc2d-4a54-9833-96ade25020ea",
+              "parentUUID": "c5474c18-7b7e-46ac-b6d8-7af8e1c55e5d",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "verify global feed likes count",
+              "fullTitle": "Test with backend verify global feed likes count",
+              "timedOut": null,
+              "duration": 1390,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.intercept(\"GET\", Cypress.env('apiUrl') + '/articles/feed*', {\n  \"articles\": [],\n  \"articlesCount\": 0\n});\ncy.intercept(\"GET\", Cypress.env('apiUrl') + \"/api/articles*\", {\n  fixture: 'articles.json'\n});\ncy.contains(\"Global Feed\").click();\ncy.get('app-article-list button').then(heartList => {\n  expect(heartList[0]).to.contain('20');\n  expect(heartList[1]).to.contain('13');\n});\ncy.fixture('articles').then(file => {\n  const articleSlug = file.articles[1].slug;\n  file.articles[1].favoritesCount += 1;\n  cy.intercept(\"POST\", Cypress.env('apiUrl') + `/api/articles/${articleSlug}/favorite`, file);\n});\ncy.get('app-article-list button').eq(1).click().should('contain', '14');",
+              "err": {
+                "message": "AssertionError: expected '<button.btn.btn-sm.btn-outline-primary>' to contain '20'",
+                "estack": "AssertionError: expected '<button.btn.btn-sm.btn-outline-primary>' to contain '20'\n    at Context.eval (webpack://realword-app-test/./cypress/e2e/firstTest.spec.js:35:30)",
+                "diff": null
+              },
+              "uuid": "4fab14d2-c68c-4d9b-8e08-37dcd70e23b1",
+              "parentUUID": "c5474c18-7b7e-46ac-b6d8-7af8e1c55e5d",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "delete a new article in global article feed",
+              "fullTitle": "Test with backend delete a new article in global article feed",
+              "timedOut": null,
+              "duration": 1567,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "const bodyRequest = {\n  \"article\": {\n    \"tagList\": [],\n    \"title\": \"Request from API\",\n    \"description\": \"Sample request from api\",\n    \"body\": \"Sample body of post\"\n  }\n};\ncy.get('@token').then(token => {\n  cy.request({\n    url: Cypress.env('apiUrl') + \"/articles\",\n    headers: {\n      'Authorization': `Token ${token}`\n    },\n    method: 'POST',\n    body: bodyRequest\n  }).then(response => {\n    expect(response.status).to.equal(201);\n  });\n  cy.contains('Global Feed').click().then(() => {\n    cy.wait(500);\n    cy.get('.article-preview').first().click();\n    cy.get('.article-actions').contains('Delete Article').click();\n    cy.request({\n      url: Cypress.env('apiUrl') + \"/articles?limit=10&offset=0\",\n      headers: {\n        'Authorization': `Token ${token}`\n      },\n      method: 'GET'\n    }).its('body').then(body => {\n      expect(body.articles[0].title).not.to.equal(\"Request from API\");\n    });\n  });\n});",
+              "err": {
+                "message": "CypressError: `cy.request()` failed on:\n\nhttps://conduit-api.bondaracademy.com/api/articles\n\nThe response we received from your web server was:\n\n  > 422: Unprocessable Entity\n\nThis was considered a failure because the status code was not `2xx` or `3xx`.\n\nIf you do not want status codes to cause failures pass the option: `failOnStatusCode: false`\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: https://conduit-api.bondaracademy.com/api/articles\nHeaders: {\n  \"Connection\": \"keep-alive\",\n  \"Authorization\": \"Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyNDl9LCJpYXQiOjE3MDg4NzExODYsImV4cCI6MTcxNDA1NTE4Nn0.vhMJ7h9te0RpXbtQCrhMQIjvBicPS7k13htHZg7yHmI\",\n  \"user-agent\": \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/13.6.4 Chrome/114.0.5735.289 Electron/25.8.4 Safari/537.36\",\n  \"accept\": \"*/*\",\n  \"accept-encoding\": \"gzip, deflate\",\n  \"content-type\": \"application/json\",\n  \"content-length\": 122\n}\nBody: {\"article\":{\"tagList\":[],\"title\":\"Request from API\",\"description\":\"Sample request from api\",\"body\":\"Sample body of post\"}}\n\n-----------------------------------------------------------\n\nThe response we got was:\n\nStatus: 422 - Unprocessable Entity\nHeaders: {\n  \"x-powered-by\": \"Express\",\n  \"access-control-allow-origin\": \"https://conduit.bondaracademy.com\",\n  \"vary\": \"Origin\",\n  \"content-type\": \"application/json; charset=utf-8\",\n  \"etag\": \"W/\\\"27-BNeuaWQ7DHvW/r+pl+qdJiF06Is\\\"\",\n  \"x-cloud-trace-context\": \"87720bd24735bb8a83919866d1a1fd71\",\n  \"date\": \"Sun, 25 Feb 2024 14:26:27 GMT\",\n  \"server\": \"Google Frontend\",\n  \"content-length\": \"39\"\n}\nBody: {\n  \"errors\": {\n    \"title\": [\n      \"must be unique\"\n    ]\n  }\n}\n\n\nhttps://on.cypress.io/request",
+                "estack": "CypressError: `cy.request()` failed on:\n\nhttps://conduit-api.bondaracademy.com/api/articles\n\nThe response we received from your web server was:\n\n  > 422: Unprocessable Entity\n\nThis was considered a failure because the status code was not `2xx` or `3xx`.\n\nIf you do not want status codes to cause failures pass the option: `failOnStatusCode: false`\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: https://conduit-api.bondaracademy.com/api/articles\nHeaders: {\n  \"Connection\": \"keep-alive\",\n  \"Authorization\": \"Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyNDl9LCJpYXQiOjE3MDg4NzExODYsImV4cCI6MTcxNDA1NTE4Nn0.vhMJ7h9te0RpXbtQCrhMQIjvBicPS7k13htHZg7yHmI\",\n  \"user-agent\": \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/13.6.4 Chrome/114.0.5735.289 Electron/25.8.4 Safari/537.36\",\n  \"accept\": \"*/*\",\n  \"accept-encoding\": \"gzip, deflate\",\n  \"content-type\": \"application/json\",\n  \"content-length\": 122\n}\nBody: {\"article\":{\"tagList\":[],\"title\":\"Request from API\",\"description\":\"Sample request from api\",\"body\":\"Sample body of post\"}}\n\n-----------------------------------------------------------\n\nThe response we got was:\n\nStatus: 422 - Unprocessable Entity\nHeaders: {\n  \"x-powered-by\": \"Express\",\n  \"access-control-allow-origin\": \"https://conduit.bondaracademy.com\",\n  \"vary\": \"Origin\",\n  \"content-type\": \"application/json; charset=utf-8\",\n  \"etag\": \"W/\\\"27-BNeuaWQ7DHvW/r+pl+qdJiF06Is\\\"\",\n  \"x-cloud-trace-context\": \"87720bd24735bb8a83919866d1a1fd71\",\n  \"date\": \"Sun, 25 Feb 2024 14:26:27 GMT\",\n  \"server\": \"Google Frontend\",\n  \"content-length\": \"39\"\n}\nBody: {\n  \"errors\": {\n    \"title\": [\n      \"must be unique\"\n    ]\n  }\n}\n\n\nhttps://on.cypress.io/request\n    at <unknown> (https://conduit.bondaracademy.com/__cypress/runner/cypress_runner.js:133028:72)\n    at tryCatcher (https://conduit.bondaracademy.com/__cypress/runner/cypress_runner.js:1807:23)\n    at Promise._settlePromiseFromHandler (https://conduit.bondaracademy.com/__cypress/runner/cypress_runner.js:1519:31)\n    at Promise._settlePromise (https://conduit.bondaracademy.com/__cypress/runner/cypress_runner.js:1576:18)\n    at Promise._settlePromise0 (https://conduit.bondaracademy.com/__cypress/runner/cypress_runner.js:1621:10)\n    at Promise._settlePromises (https://conduit.bondaracademy.com/__cypress/runner/cypress_runner.js:1701:18)\n    at _drainQueueStep (https://conduit.bondaracademy.com/__cypress/runner/cypress_runner.js:2407:12)\n    at _drainQueue (https://conduit.bondaracademy.com/__cypress/runner/cypress_runner.js:2400:9)\n    at Async._drainQueues (https://conduit.bondaracademy.com/__cypress/runner/cypress_runner.js:2416:5)\n    at Async.drainQueues (https://conduit.bondaracademy.com/__cypress/runner/cypress_runner.js:2286:14)\nFrom Your Spec Code:\n    at Context.eval (webpack://realword-app-test/./cypress/e2e/firstTest.spec.js:84:9)",
+                "diff": null
+              },
+              "uuid": "fb2b57b0-c3bc-4f92-a08b-917883edc5c8",
+              "parentUUID": "c5474c18-7b7e-46ac-b6d8-7af8e1c55e5d",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "d3dba654-bc2d-4a54-9833-96ade25020ea"
+          ],
+          "failures": [
+            "4bb2d67d-5347-47a0-ba76-6b12198180e3",
+            "4fab14d2-c68c-4d9b-8e08-37dcd70e23b1",
+            "fb2b57b0-c3bc-4f92-a08b-917883edc5c8"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 7595,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "reportDir": "cypress/results/mochawesome",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}

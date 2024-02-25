@@ -1,11 +1,11 @@
 describe('Test with backend', () => {
   beforeEach('Login to App', () => {
     cy.intercept({method: 'GET', path: 'tags'}, {fixture: 'tags.json'})
-    cy.loginToApi()
+    cy.loginToApplication()
   })
   
   it('Verify correct request and response', () => {
-    cy.intercept('POST', 'https://conduit-api.bondaracademy.com/api/articles/').as('postArticles')
+    cy.intercept('POST', Cypress.env('apiUrl') + '/articles/').as('postArticles')
 
     cy.contains('New Article').click()
     cy.get('[formcontrolname="title"]').type("First Article")
@@ -27,9 +27,9 @@ describe('Test with backend', () => {
       .and('contain', 'testing')
   })
 
-  it('verify global feed likes count', () => {
-    cy.intercept("GET", 'https://conduit-api.bondaracademy.com/api/articles/feed*', {"articles":[],"articlesCount":0})
-    cy.intercept("GET", "https://conduit-api.bondaracademy.com/api/articles*", {fixture: 'articles.json'})
+  it('verify global feed likes count', {retries: 0}, () => {
+    cy.intercept("GET", Cypress.env('apiUrl') + '/articles/feed*', {"articles":[],"articlesCount":0})
+    cy.intercept("GET", Cypress.env('apiUrl') + "/api/articles*", {fixture: 'articles.json'})
     cy.contains("Global Feed").click()
     cy.get('app-article-list button').then(heartList => {
       expect(heartList[0]).to.contain('20')
@@ -39,7 +39,7 @@ describe('Test with backend', () => {
     cy.fixture('articles').then(file => {
       const articleSlug = file.articles[1].slug
       file.articles[1].favoritesCount += 1
-      cy.intercept("POST", `https://conduit-api.bondaracademy.com/api/articles/${articleSlug}/favorite`, file)
+      cy.intercept("POST", Cypress.env('apiUrl') +`/api/articles/${articleSlug}/favorite`, file)
     })
 
     cy.get('app-article-list button').eq(1).click().should('contain', '14')
@@ -82,7 +82,7 @@ describe('Test with backend', () => {
 
     cy.get('@token').then(token => {
       cy.request({
-        url: "https://conduit-api.bondaracademy.com/api/articles",
+        url: Cypress.env('apiUrl') + "/articles",
         headers: {
           'Authorization': `Token ${token}`
         },
@@ -98,7 +98,7 @@ describe('Test with backend', () => {
         cy.get('.article-actions').contains('Delete Article').click()
 
         cy.request({
-          url: "https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0",
+          url: Cypress.env('apiUrl') + "/articles?limit=10&offset=0",
           headers: {
             'Authorization': `Token ${token}`
           },

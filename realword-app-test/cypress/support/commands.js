@@ -22,28 +22,52 @@
 //
 //
 // -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-Cypress.Commands.add('loginToApi', () => {
-    const userCredentials = {
-        "user": {
-          "email": "mvxj11@example.com",
-          "password": "Qwertyuiop"
-        }
-      }
 
-      cy.request('POST', 'https://conduit-api.bondaracademy.com/api/users/login', userCredentials)
-      .its('body').then(body => {
-        const token = body.user.token
-        cy.wrap(token).as('token')
-        cy.visit('/', {
-            onBeforeLoad(window) {
-                window.localStorage.setItem('jwtToken', token)
-            }
-        })
-      })
+// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+// Cypress.Commands.add('loginToApi', () => {
+    // const userCredentials = {
+    //     "user": {
+    //       "email": "mvxj11@example.com",
+    //       "password": "Qwertyuiop"
+    //     }
+    //   }
+    //
+    //   cy.request('POST', 'https://conduit-api.bondaracademy.com/api/users/login', userCredentials)
+    //   .its('body').then(body => {
+    //     const token = body.user.token
+    //     cy.wrap(token).as('token')
+    //     cy.visit('/', {
+    //         onBeforeLoad(window) {
+    //             window.localStorage.setItem('jwtToken', token)
+    //         }
+    //     })
+    //   })
     //
     // cy.visit('/login')
     // cy.get('[placeholder="Email"]').type('mvxj11@example.com')
     // cy.get('[placeholder="Password"]').type('Qwertyuiop')
     // cy.get('form').submit()
+// })
+
+Cypress.Commands.add('loginToApplication', () => {
+    const userCredentials = {
+        "user": {
+            "email": Cypress.env('username'),
+            "password": Cypress.env('password'),
+        }
+    }
+
+    cy.request('POST', Cypress.env('apiUrl') + '/users/login', userCredentials)
+        .its('body')
+        .then(body => {
+            const token = body.user.token;
+
+            cy.wrap(token).as('token')
+            cy.visit('/', {
+                onBeforeLoad (win) {
+                    win.localStorage.setItem('jwtToken', token);
+                }
+            })
+        })
 })
