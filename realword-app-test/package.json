@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "cypress:run": "npm run prereport && npx cypress run; npm run mochawsome:merge",
+    "cypress:headless": "npx cypress run --headless --record --key 6246e40b-49dc-49b6-a865-9c185e9daf5e",
     "cypres:open:dev": "npx cypress open --env username=example@use.com,password=Welcome123",
     "cypress:open:process": "npx cypress open --env username=$DB_USERNAME,password=$PASSWORD",
     "delete:reports": "rm -r cypress/results/* || true",
